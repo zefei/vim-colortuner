@@ -111,3 +111,36 @@ endfunction
 function! s:rgb2hex(rgb)
   return printf('#%02x%02x%02x', a:rgb.r, a:rgb.g, a:rgb.b)
 endfunction
+
+" convert rgb to hsl in place
+function! s:rgb2hsl(rgb)
+  let r = a:rgb.r / 255.0
+  let g = a:rgb.g / 255.0
+  let b = a:rgb.b / 255.0
+  let rgb = [a:rgb.r, a:rgb.g, a:rgb.b]
+  let M = max(rgb) / 255.0
+  let m = min(rgb) / 255.0
+  let c = M - m
+  let l = (M + m) / 2
+
+  if c == 0
+    let h = 0.0
+    let s = 0.0
+  else
+    if M == r
+      let h = (g - b) / c + (g < b ? 6 : 0)
+    elseif M == g
+      let h = (b - r) / c + 2
+    else
+      let h = (r - g) / c + 4
+    endif
+    let s = l > 0.5 ? c / (2 - M - m) : c / (M + m)
+  endif
+
+  let a:rgb.h = h
+  let a:rgb.s = s
+  let a:rgb.l = l
+  return a:rgb
+endfunction
+
+" convert hsl to rgb in place
