@@ -41,21 +41,23 @@ function! s:make_slider(value, m, M)
   return repeat('#', n).repeat('-', width - n).'  '.(a:value > 0 ? '+' : '').a:value
 endfunction
 
-function! s:tune(dir)
+function! s:tune(delta)
   let l = line('.')
 
-  if l == 3
-    call colortuner#set('brightness', a:dir)
+  if l == 1
+    call colortuner#rotate_colorscheme(a:delta)
+  elseif l == 3
+    call colortuner#set('brightness', a:delta)
   elseif l == 4
-    call colortuner#set('contrast', a:dir)
+    call colortuner#set('contrast', a:delta)
   elseif l == 5
-    call colortuner#set('saturation', a:dir)
+    call colortuner#set('saturation', a:delta)
   elseif l == 6
-    call colortuner#set('hue', a:dir)
+    call colortuner#set('hue', a:delta)
   elseif l == 8
-    call colortuner#set('enabled', a:dir)
+    call colortuner#set('enabled', a:delta)
   elseif l == 9
-    call colortuner#set('inverted', a:dir)
+    call colortuner#set('inverted', a:delta)
   endif
 
   call s:render()

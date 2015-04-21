@@ -16,6 +16,7 @@ endfunction
 
 call s:set('g:colortuner_filepath', '~/.vim-colortuner')
 call s:set('g:colortuner_enabled', 1)
+call s:set('g:colortuner_preferred_schemes', [])
 
 " init colortuner
 call colortuner#init()

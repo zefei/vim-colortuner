@@ -1,11 +1,13 @@
 function! colortuner#init()
   let s:colors = {}
   let s:enabled = g:colortuner_enabled
+  let s:schemes = g:colortuner_preferred_schemes
   call colortuner#load()
 
   augroup colortuner_colorscheme
     autocmd!
     autocmd ColorScheme,VimEnter * call colortuner#on_colorscheme()
+    autocmd VimEnter * call colortuner#get_all_colorschemes()
     autocmd BufEnter __colortuner__ call colortuner#ui#setup()
     autocmd VimLeave * call colortuner#save()
   augroup END
@@ -32,6 +34,17 @@ function! colortuner#on_colorscheme()
   else
     call s:render()
   endif
+endfunction
+
+function! colortuner#get_all_colorschemes()
+  if s:schemes != []
+    return
+  endif
+
+  for fname in split(globpath(&runtimepath, 'colors/*.vim'), '\n')
+    let name = fnamemodify(fname, ':t:r')
+    let s:schemes += [name]
+  endfor
 endfunction
 
 function! s:get_colorscheme()
@@ -66,6 +79,15 @@ function! colortuner#set(attr, delta)
     let s[a:attr] = s:clamp(s[a:attr] + a:delta * step[a:attr], m[a:attr], M[a:attr])
   endif
   call s:render()
+endfunction
+
+function! colortuner#rotate_colorscheme(delta)
+  let name = s:get_colorscheme()
+  let i = index(s:schemes, name)
+  let n = len(s:schemes)
+  let i = (i + a:delta) % n
+  let i += i < 0 ? n : 0
+  execute 'colorscheme '.s:schemes[i]
 endfunction
 
 function! s:render()

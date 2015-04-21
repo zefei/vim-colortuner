@@ -22,19 +22,28 @@ Use your favorite package manager to install:
 # Usage
 
 Once installed, you can type `:Colortuner` to open the tuner panel, then just 
-use normal movement keys to adjust settings.
+use normal movement keys to adjust settings. Tuner settings are persisted to 
+disk on a per-colorscheme basis.
 
 # Configuration
 
     g:colortuner_filepath
     values: string
     default: '~/.vim-colortuner'
-    This option sets the file path of tuner panel settings.
+        This option sets the file path of tuner panel settings.
 
     g:colortuner_enabled
     values: 0 or 1
     default: 1
-    Colortuner is enabled at start if this option is set.
+        Colortuner is enabled at start if this option is set.
+
+    g:colortuner_preferred_schemes
+    values: list of strings
+    default: []
+    example: ['zenburn', 'solarized', 'cake16']
+        Colortuner rotates among these colorschemes when you adjust the 
+        colorscheme option in tuner panel. If empty list (default) is set, 
+        colortuner will rotate among all installed colorschemes.
 
 # FAQ
 
