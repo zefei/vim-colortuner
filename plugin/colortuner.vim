@@ -2,7 +2,7 @@ if exists('g:loaded_colortuner') || !has('gui_running')
       " \&& !has('nvim')
   finish
 endif
-" let g:loaded_colortuner = 1
+let g:loaded_colortuner = 1
 
 " commands
 command! Colortuner call colortuner#ui#open()

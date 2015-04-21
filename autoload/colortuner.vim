@@ -1,8 +1,6 @@
 function! colortuner#init()
   let s:colors = {}
-  let g:colortuner_settings = s:settings
   let s:enabled = g:colortuner_enabled
-
   call colortuner#load()
 
   augroup colortuner_colorscheme
