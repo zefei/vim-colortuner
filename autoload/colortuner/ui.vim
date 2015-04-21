@@ -23,16 +23,22 @@ function! s:render()
   let setting = colortuner#get_setting()
   let s = setting.setting
   call append(0, [
-        \'  Color scheme     '.setting.name,
+        \'  Color scheme  '.setting.name,
         \'',
-        \'  Brightness       '.s.brightness,
-        \'  Contrast         '.s.contrast,
-        \'  Saturation       '.s.saturation,
-        \'  Hue              '.s.hue,
+        \'  Brightness    '.s:make_slider(s.brightness, -50, 50),
+        \'  Contrast      '.s:make_slider(s.contrast, -50, 50),
+        \'  Saturation    '.s:make_slider(s.saturation, -50, 50),
+        \'  Hue           '.s:make_slider(s.hue, -180, 180),
         \'',
-        \'  Enabled         '.(setting.enabled ? 'Yes' : 'No'),
-        \'  Inverted        '.(s.inverted ? 'Yes' : 'No')])
+        \'  Enabled       '.(setting.enabled ? 'Yes' : 'No'),
+        \'  Inverted      '.(s.inverted ? 'Yes' : 'No')])
   setlocal nomodifiable
+endfunction
+
+function! s:make_slider(value, m, M)
+  let width = 30
+  let n = float2nr(1.0 * (a:value - a:m) / (a:M - a:m) * width)
+  return repeat('#', n).repeat('-', width - n).'  '.a:value
 endfunction
 
 function! s:tune(dir)
