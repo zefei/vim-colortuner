@@ -26,23 +26,23 @@ use normal movement keys to adjust settings.
 
 # Configuration
 
-* g:colortuner_filepath
-  values: string
-  default: '~/.vim-colortuner'
-  This option sets the file path of tuner panel settings.
+    g:colortuner_filepath
+    values: string
+    default: '~/.vim-colortuner'
+    This option sets the file path of tuner panel settings.
 
-* g:colortuner_enabled
-  values: 0 or 1
-  default: 1
-  Colortuner is enabled at start if this option is set.
+    g:colortuner_enabled
+    values: 0 or 1
+    default: 1
+    Colortuner is enabled at start if this option is set.
 
 # FAQ
 
 A: Does colortuner support vim in terminal?
 
-Q: Currently no, since true color is essential for tuning colors. However, 
-Neovim has support for true color terminals. Colortuner will support Neovim in 
-terminal once stable version of Neovim has it.
+Q: Currently no, since true color support is essential for tuning colors. 
+However, Neovim has support for true color terminals. Colortuner will support 
+Neovim in terminal once stable version of Neovim has it.
 
 # License
 
