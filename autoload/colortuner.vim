@@ -14,7 +14,7 @@ function! colortuner#init()
 endfunction
 
 function! colortuner#load()
-  let settings = readfile(g:colortuner_filepath)
+  let settings = readfile(expand(g:colortuner_filepath))
   if len(settings) == 1
     execute 'let s:settings = '.settings[0]
   else
@@ -23,7 +23,7 @@ function! colortuner#load()
 endfunction
 
 function! colortuner#save()
-  call writefile([string(s:settings)], g:colortuner_filepath)
+  call writefile([string(s:settings)], expand(g:colortuner_filepath))
 endfunction
 
 function! colortuner#on_colorscheme()

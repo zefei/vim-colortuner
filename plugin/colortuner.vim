@@ -14,7 +14,7 @@ function! s:set(var, value)
   endif
 endfunction
 
-call s:set('g:colortuner_filepath', expand('~/.vim-colortuner'))
+call s:set('g:colortuner_filepath', '~/.vim-colortuner')
 call s:set('g:colortuner_enabled', 1)
 
 " init colortuner

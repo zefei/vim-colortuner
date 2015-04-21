@@ -75,10 +75,9 @@ function! colortuner#ui#setup()
   setlocal nonumber
   setlocal norelativenumber
   setlocal nowrap
-  setlocal statusline=colortuner
   setlocal colorcolumn=
   setlocal cursorline
-  let &l:statusline = ' h/l/-/+: adjust | r: reset | q: quit'
+  let &l:statusline = ' colortuner | h/l/-/+: adjust | r: reset | q: quit'
   execute '10 wincmd _'
 
   nnoremap <script> <silent> <buffer> h :call <SID>tune(-1)<CR>
