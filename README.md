@@ -5,7 +5,7 @@ sliders. It can make any color scheme look great with very little effort.
 
 # Screenshots
 
-Coming soon!
+![image](https://raw.githubusercontent.com/zefei/vim-colortuner/master/screenshots/screencast1.gif)
 
 # Installation
 
