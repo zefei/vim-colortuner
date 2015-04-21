@@ -1,68 +1,39 @@
 function! colortuner#init()
   let s:colors = {}
-  let s:settings = {}
-  let s:settings.brightness = 0
+  let g:colortuner_settings = s:settings
+  let s:enabled = g:colortuner_enabled
+
+  call colortuner#load()
 
   augroup colortuner_colorscheme
     autocmd!
-    autocmd ColorScheme * call colortuner#on_colorscheme()
+    autocmd ColorScheme,VimEnter * call colortuner#on_colorscheme()
+    autocmd BufEnter __colortuner__ call colortuner#ui#setup()
+    autocmd VimLeave * call colortuner#save()
   augroup END
-  call colortuner#on_colorscheme()
 endfunction
 
-function! colortuner#test()
-  let name = s:get_colorscheme()
-  let colors = s:colors[name]
-
-  for [group, value] in items(colors)
-    for [key, rgb] in items(value)
-      let c = {}
-      let c.r = (rgb.r + 255) / 2
-      let c.g = (rgb.g + 255) / 2
-      let c.b = (rgb.b + 255) / 2
-
-      execute 'highlight '.group.' gui'.key.'='.s:rgb2hex(c)
-    endfor
-  endfor
-endfunction
-
-function! colortuner#lighter()
-  let s:settings.brightness += 1
-  call s:render()
-endfunction
-
-function! colortuner#darker()
-  let s:settings.brightness -= 1
-  call s:render()
-endfunction
-
-function! s:render()
-  let colors = s:colors[s:get_colorscheme()]
-
-  for [group, value] in items(colors)
-    for [key, rgb] in items(value)
-      let color = {}
-      for c in keys(rgb)
-        let color[c] = s:clip(rgb[c] + s:settings.brightness * 10)
-      endfor
-      execute 'highlight '.group.' gui'.key.'='.s:rgb2hex(color)
-    endfor
-  endfor
-endfunction
-
-function! s:clip(number)
-  if a:number < 0
-    return 0
-  elseif a:number > 255
-    return 255
+function! colortuner#load()
+  let settings = readfile(g:colortuner_filepath)
+  if len(settings) == 1
+    execute 'let s:settings = '.settings[0]
   else
-    return a:number
+    let s:settings = {}
   endif
+endfunction
+
+function! colortuner#save()
+  call writefile([string(s:settings)], g:colortuner_filepath)
 endfunction
 
 function! colortuner#on_colorscheme()
   let name = s:get_colorscheme()
   let s:colors[name] = s:get_colors()
+  if !has_key(s:settings, name)
+    call colortuner#reset()
+  else
+    call s:render()
+  endif
 endfunction
 
 function! s:get_colorscheme()
@@ -70,6 +41,103 @@ function! s:get_colorscheme()
   silent colorscheme
   redir END
   return substitute(name,'\_s*\(.\{-}\)\_s*$','\1','')
+endfunction
+
+function! colortuner#reset()
+  let name = s:get_colorscheme()
+  let s:settings[name] = {'inverted': 0,
+        \'brightness': 0, 'contrast': 0, 'saturation': 0, 'hue': 0}
+  call s:render()
+endfunction
+
+function! colortuner#get_setting()
+  let name = s:get_colorscheme()
+  return {'enabled': s:enabled, 'name': name, 'setting': s:settings[name]}
+endfunction
+
+function! colortuner#set(attr, delta)
+  let s = s:settings[s:get_colorscheme()]
+  if a:attr == 'enabled'
+    let s:enabled = !s:enabled
+  elseif a:attr == 'inverted'
+    let s.inverted = !s.inverted
+  else
+    let step = {'brightness': 1, 'contrast': 1, 'saturation': 1, 'hue': 5}
+    let m = {'brightness': -50, 'contrast': -50, 'saturation': -50, 'hue': -180}
+    let M = {'brightness': 50, 'contrast': 50, 'saturation': 50, 'hue': 180}
+    let s[a:attr] = s:clamp(s[a:attr] + a:delta * step[a:attr], m[a:attr], M[a:attr])
+  endif
+  call s:render()
+endfunction
+
+function! s:render()
+  let name = s:get_colorscheme()
+  let colors = s:colors[name]
+
+  for [group, value] in items(colors)
+    for [key, color] in items(value)
+      let c = s:apply(color, s:settings[name])
+      execute 'highlight '.group.' gui'.key.'='.colortuner#conv#rgb2hex(c)
+    endfor
+  endfor
+endfunction
+
+function! s:apply(color, setting)
+  if !s:enabled
+    return a:color
+  endif
+
+  let color = copy(a:color)
+
+  let color.h = (float2nr(color.h * 360) + a:setting.hue + 360) % 360 / 360.0
+  let color.s = s:clamp(color.s + a:setting.saturation / 100.0, 0.0, 1.0)
+
+  let c = a:setting.contrast
+  let f = (80.0 + c) / (80.0 - c)
+  let b = a:setting.brightness
+
+  " only invert lightness, not hue, this is better than negative color
+  if a:setting.inverted
+    let color.l = 1 - color.l
+  endif
+
+  " use hsl tuning for high contrast, to avoid over-saturation
+  if c > 0
+    let color.l = f * (color.l - 0.5) + 0.5
+  endif
+
+  " use hsl tuning for high brightness, to avoid over-saturation
+  if b > 0
+    let color.l = s:clamp(color.l + a:setting.brightness / 100.0, 0.0, 1.0)
+  endif
+
+  call colortuner#conv#hsl2rgb(color)
+
+  " use rgb tuning for low contrast, to avoid over-saturation
+  if c < 0
+    let color.r = float2nr(s:clamp(f * (color.r - 128) + 128, 0, 255))
+    let color.g = float2nr(s:clamp(f * (color.g - 128) + 128, 0, 255))
+    let color.b = float2nr(s:clamp(f * (color.b - 128) + 128, 0, 255))
+  endif
+
+  " use rgb tuning for low brightness, to avoid over-saturation
+  if b < 0
+    let color.r = float2nr(s:clamp(color.r + b * 2.55, 0, 255))
+    let color.g = float2nr(s:clamp(color.g + b * 2.55, 0, 255))
+    let color.b = float2nr(s:clamp(color.b + b * 2.55, 0, 255))
+  endif
+
+  return color
+endfunction
+
+function! s:clamp(number, m, M)
+  if a:number < a:m
+    return a:m
+  elseif a:number > a:M
+    return a:M
+  else
+    return a:number
+  endif
 endfunction
 
 " get colors of all current highlight groups
@@ -87,7 +155,7 @@ function! s:get_colors()
       for key in ['fg', 'bg']
         let hex = synIDattr(i, key.'#', 'gui')
         if hex != ''
-          let colors[group][key] = s:hex2rgb(hex)
+          let colors[group][key] = colortuner#conv#rgb2hsl(colortuner#conv#hex2rgb(hex))
         endif
       endfor
     endif
@@ -97,50 +165,3 @@ function! s:get_colors()
 
   return colors
 endfunction
-
-" convert hex string to rgb
-function! s:hex2rgb(hex)
-  let rgb = {}
-  let rgb.r = str2nr(a:hex[1:2], 16)
-  let rgb.g = str2nr(a:hex[3:4], 16)
-  let rgb.b = str2nr(a:hex[5:6], 16)
-  return rgb
-endfunction
-
-" convert rgb to hex string
-function! s:rgb2hex(rgb)
-  return printf('#%02x%02x%02x', a:rgb.r, a:rgb.g, a:rgb.b)
-endfunction
-
-" convert rgb to hsl in place
-function! s:rgb2hsl(rgb)
-  let r = a:rgb.r / 255.0
-  let g = a:rgb.g / 255.0
-  let b = a:rgb.b / 255.0
-  let rgb = [a:rgb.r, a:rgb.g, a:rgb.b]
-  let M = max(rgb) / 255.0
-  let m = min(rgb) / 255.0
-  let c = M - m
-  let l = (M + m) / 2
-
-  if c == 0
-    let h = 0.0
-    let s = 0.0
-  else
-    if M == r
-      let h = (g - b) / c + (g < b ? 6 : 0)
-    elseif M == g
-      let h = (b - r) / c + 2
-    else
-      let h = (r - g) / c + 4
-    endif
-    let s = l > 0.5 ? c / (2 - M - m) : c / (M + m)
-  endif
-
-  let a:rgb.h = h
-  let a:rgb.s = s
-  let a:rgb.l = l
-  return a:rgb
-endfunction
-
-" convert hsl to rgb in place
