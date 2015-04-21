@@ -36,7 +36,7 @@ function! s:render()
 endfunction
 
 function! s:make_slider(value, m, M)
-  let width = 30
+  let width = 35
   let n = float2nr(1.0 * (a:value - a:m) / (a:M - a:m) * width)
   return repeat('#', n).repeat('-', width - n).'  '.a:value
 endfunction
@@ -83,15 +83,17 @@ function! colortuner#ui#setup()
   setlocal nowrap
   setlocal colorcolumn=
   setlocal cursorline
-  let &l:statusline = ' colortuner | h/l/-/+: adjust | r: reset | q: quit'
+  let &l:statusline = ' colortuner | h/l/-/+/b/w: adjust | r: reset | q: quit'
   execute '10 wincmd _'
 
-  nnoremap <script> <silent> <buffer> h :call <SID>tune(-1)<CR>
-  nnoremap <script> <silent> <buffer> <left> :call <SID>tune(-1)<CR>
-  nnoremap <script> <silent> <buffer> - :call <SID>tune(-1)<CR>
-  nnoremap <script> <silent> <buffer> l :call <SID>tune(1)<CR>
-  nnoremap <script> <silent> <buffer> <right> :call <SID>tune(1)<CR>
-  nnoremap <script> <silent> <buffer> + :call <SID>tune(1)<CR>
-  nnoremap <script> <silent> <buffer> r :call <SID>reset()<CR>
-  nnoremap <script> <silent> <buffer> q :quit<CR>
+  nnoremap <script> <silent> <buffer> h :<C-U>call <SID>tune(-v:count1)<CR>
+  nnoremap <script> <silent> <buffer> <left> :<C-U>call <SID>tune(-v:count1)<CR>
+  nnoremap <script> <silent> <buffer> - :<C-U>call <SID>tune(-v:count1)<CR>
+  nnoremap <script> <silent> <buffer> b :<C-U>call <SID>tune(-5*v:count1)<CR>
+  nnoremap <script> <silent> <buffer> l :<C-U>call <SID>tune(v:count1)<CR>
+  nnoremap <script> <silent> <buffer> <right> :<C-U>call <SID>tune(v:count1)<CR>
+  nnoremap <script> <silent> <buffer> + :<C-U>call <SID>tune(v:count1)<CR>
+  nnoremap <script> <silent> <buffer> w :<C-U>call <SID>tune(5*v:count1)<CR>
+  nnoremap <script> <silent> <buffer> r :<C-U>call <SID>reset()<CR>
+  nnoremap <script> <silent> <buffer> q :<C-U>quit<CR>
 endfunction
