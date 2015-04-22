@@ -1,5 +1,4 @@
-if exists('g:loaded_colortuner') || !has('gui_running')
-      " \&& !has('nvim')
+if exists('g:loaded_colortuner') || !has('gui_running') && !has('nvim')
   finish
 endif
 let g:loaded_colortuner = 1
