@@ -129,24 +129,30 @@ function! s:apply(color, setting)
 
   " use hsl tuning for high brightness, to avoid over-saturation
   if b > 0
-    let color.l = s:clamp(color.l + a:setting.brightness / 100.0, 0.0, 1.0)
+    let color.l = color.l + b / 100.0
   endif
+
+  let color.l = s:clamp(color.l, 0.0, 1.0)
 
   call colortuner#conv#hsl2rgb(color)
 
   " use rgb tuning for low contrast, to avoid over-saturation
   if c < 0
-    let color.r = float2nr(s:clamp(f * (color.r - 128) + 128, 0, 255))
-    let color.g = float2nr(s:clamp(f * (color.g - 128) + 128, 0, 255))
-    let color.b = float2nr(s:clamp(f * (color.b - 128) + 128, 0, 255))
+    let color.r = float2nr(f * (color.r - 128) + 128)
+    let color.g = float2nr(f * (color.g - 128) + 128)
+    let color.b = float2nr(f * (color.b - 128) + 128)
   endif
 
   " use rgb tuning for low brightness, to avoid over-saturation
   if b < 0
-    let color.r = float2nr(s:clamp(color.r + b * 2.55, 0, 255))
-    let color.g = float2nr(s:clamp(color.g + b * 2.55, 0, 255))
-    let color.b = float2nr(s:clamp(color.b + b * 2.55, 0, 255))
+    let color.r = float2nr(color.r + b * 2.55)
+    let color.g = float2nr(color.g + b * 2.55)
+    let color.b = float2nr(color.b + b * 2.55)
   endif
+
+  let color.r = s:clamp(color.r, 0, 255)
+  let color.g = s:clamp(color.g, 0, 255)
+  let color.b = s:clamp(color.b, 0, 255)
 
   return color
 endfunction
