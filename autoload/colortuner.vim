@@ -14,7 +14,8 @@ function! colortuner#init()
 endfunction
 
 function! colortuner#load()
-  let settings = readfile(expand(g:colortuner_filepath))
+  let file = expand(g:colortuner_filepath)
+  let settings = filereadable(file) ? readfile(file) : []
   if len(settings) == 1
     execute 'let s:settings = '.settings[0]
   else
