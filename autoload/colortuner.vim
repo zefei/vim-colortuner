@@ -122,29 +122,31 @@ function! s:apply(color, setting)
     let color.l = 1 - color.l
   endif
 
-  " use hsl tuning for high contrast, to avoid over-saturation
-  if c > 0
+  " vivid mode, default to 0, decides tuning methods with the chart below
+  " vivid?   |   contrast/brightness value   |   tuning method
+  " false    |   > 0                         |   tune on lightness
+  " false    |   < 0                         |   tune on rgb separately
+  " true     |   > 0                         |   tune on rgb separately
+  " true     |   < 0                         |   tune on lightness
+  let vivid = g:colortuner_vivid_mode
+
+  if c > 0 && !vivid || c < 0 && vivid
     let color.l = f * (color.l - 0.5) + 0.5
   endif
 
-  " use hsl tuning for high brightness, to avoid over-saturation
-  if b > 0
+  if b > 0 && !vivid || b < 0 && vivid
     let color.l = color.l + b / 100.0
   endif
 
-  let color.l = s:clamp(color.l, 0.0, 1.0)
-
   call colortuner#conv#hsl2rgb(color)
 
-  " use rgb tuning for low contrast, to avoid over-saturation
-  if c < 0
+  if c < 0 && !vivid || c > 0 && vivid
     let color.r = float2nr(f * (color.r - 128) + 128)
     let color.g = float2nr(f * (color.g - 128) + 128)
     let color.b = float2nr(f * (color.b - 128) + 128)
   endif
 
-  " use rgb tuning for low brightness, to avoid over-saturation
-  if b < 0
+  if b < 0 && !vivid || b > 0 && vivid
     let color.r = float2nr(color.r + b * 2.55)
     let color.g = float2nr(color.g + b * 2.55)
     let color.b = float2nr(color.b + b * 2.55)

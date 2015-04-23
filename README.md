@@ -27,6 +27,21 @@ disk on a per-colorscheme basis.
 
 # Configuration
 
+    g:colortuner_preferred_schemes
+    values: list of strings
+    default: []
+    example: ['zenburn', 'solarized', 'cake16']
+        Colortuner rotates among these colorschemes when you adjust the 
+        colorscheme option in tuner panel. If empty list (default) is set, 
+        colortuner will rotate among all installed colorschemes.
+
+    g:colortuner_vivid_mode
+    values: 0 or 1
+    default: 0
+        Colortuner by default tries to avoid over-saturation when tuning 
+        brightness or contrast. This might result in under-saturated colors. You 
+        can set this option to 1 to reverse the effect.
+
     g:colortuner_filepath
     values: string
     default: '~/.vim-colortuner'
@@ -36,14 +51,6 @@ disk on a per-colorscheme basis.
     values: 0 or 1
     default: 1
         Colortuner is enabled at start if this option is set.
-
-    g:colortuner_preferred_schemes
-    values: list of strings
-    default: []
-    example: ['zenburn', 'solarized', 'cake16']
-        Colortuner rotates among these colorschemes when you adjust the 
-        colorscheme option in tuner panel. If empty list (default) is set, 
-        colortuner will rotate among all installed colorschemes.
 
 # FAQ
 
