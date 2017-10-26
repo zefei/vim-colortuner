@@ -91,15 +91,26 @@ function! colortuner#rotate_colorscheme(delta)
   execute 'colorscheme '.s:schemes[i]
 endfunction
 
+function! colortuner#yank()
+  let @" = s:current_colors
+endfunction
+
 function! s:render()
   let name = s:get_colorscheme()
   let colors = s:colors[name]
+  let s:current_colors = ''
 
   for [group, value] in items(colors)
+    if empty(value)
+      continue
+    endif
+    let cmd = 'highlight '.group
     for [key, color] in items(value)
       let c = s:apply(color, s:settings[name])
-      execute 'highlight '.group.' gui'.key.'='.colortuner#conv#rgb2hex(c)
+      let cmd = cmd.' gui'.key.'='.colortuner#conv#rgb2hex(c)
     endfor
+    let s:current_colors = s:current_colors.cmd."\n"
+    execute cmd
   endfor
 endfunction
 

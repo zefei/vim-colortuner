@@ -85,7 +85,7 @@ function! colortuner#ui#setup()
   setlocal nowrap
   setlocal colorcolumn=
   setlocal cursorline
-  let &l:statusline = ' colortuner | h/l/-/+/b/w: adjust | r: reset | q: quit'
+  let &l:statusline = ' colortuner | h/l/-/+/b/w: adjust | r: reset | y: yank | q: quit'
   execute '10 wincmd _'
 
   nnoremap <script> <silent> <buffer> h :<C-U>call <SID>tune(-v:count1)<CR>
@@ -97,5 +97,7 @@ function! colortuner#ui#setup()
   nnoremap <script> <silent> <buffer> + :<C-U>call <SID>tune(v:count1)<CR>
   nnoremap <script> <silent> <buffer> w :<C-U>call <SID>tune(5*v:count1)<CR>
   nnoremap <script> <silent> <buffer> r :<C-U>call <SID>reset()<CR>
+  nnoremap <script> <silent> <buffer> y :<C-U>call colortuner#yank()<CR>
+  nnoremap <script> <silent> <buffer> yy :<C-U>call colortuner#yank()<CR>
   nnoremap <script> <silent> <buffer> q :<C-U>quit<CR>
 endfunction

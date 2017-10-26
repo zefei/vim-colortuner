@@ -54,12 +54,17 @@ disk on a per-colorscheme basis.
 
 # FAQ
 
-A: Does colortuner support vim in terminal?
+Q: Does colortuner support vim in terminal?
 
-Q: Currently no, since true color support is essential for tuning colors. 
+A: Currently no, since true color support is essential for tuning colors. 
 However, Neovim has support for true color terminals, and colortuner supports 
 Neovim in the terminal. But notice that at the moment very few terminals work 
 well with Neovim true color mode.
+
+Q: How can I save tuned colorscheme?
+
+A: You can press 'y' in the colortuner window to yank all color values to 
+current register, then 'p'ut it wherever you want.
 
 # License
 
