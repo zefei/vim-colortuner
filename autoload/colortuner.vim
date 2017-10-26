@@ -183,7 +183,7 @@ function! s:get_colors()
       let colors[group] = {}
       for key in ['fg', 'bg']
         let hex = synIDattr(i, key.'#', 'gui')
-        if len(hex) == 7 && hex[0] == '#'
+        if len(hex) == 7 && hex[0] == '#' && hex != '#000000'
           let colors[group][key] = colortuner#conv#rgb2hsl(colortuner#conv#hex2rgb(hex))
         endif
       endfor
