@@ -92,7 +92,10 @@ function! colortuner#rotate_colorscheme(delta)
 endfunction
 
 function! colortuner#yank()
-  let @" = s:current_colors
+  " Will work with any register, and with unamedplus register
+  " e.g. "ayy
+  exe "let @".v:register."='".s:current_colors."'"
+  echom "Colors yanked to register ".v:register
 endfunction
 
 function! s:render()
